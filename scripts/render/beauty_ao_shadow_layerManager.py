@@ -1,6 +1,7 @@
 import os, sys
 import maya.app.renderSetup as renderSetup
 import mtoa.aovs as aovs
+from pymel.core import *
 
 
 def create_layers():
