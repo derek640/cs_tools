@@ -15,8 +15,8 @@ def create_layers():
     rs_ins = rs.instance()
     rs_ins.getDefaultRenderLayer().setRenderable(0)
     ar.createOptions()
-    setAttr('defaultArnoldDriver.mergeAOVs', 1)
-    setAttr('defaultRenderGlobals.imageFilePrefix', '<Scene>/<RenderLayer>')
+    pm.setAttr('defaultArnoldDriver.mergeAOVs', 1)
+    pm.setAttr('defaultRenderGlobals.imageFilePrefix', '<Scene>/<RenderLayer>')
 
     aovs.AOVInterface().addAOV('ao', aovType='rgba')
     ao = pm.createNode('aiAmbientOcclusion')
@@ -100,3 +100,6 @@ def create_layers():
             ovb.finalize('primaryVisibility')
             ovb.setAttrValue(1)
 
+    rsl = rs_ins.createRenderLayer('all_objs')
+    co = rsl.createCollection('co_all')
+    co.getSelector().setPattern('*')
