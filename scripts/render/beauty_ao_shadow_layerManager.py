@@ -9,14 +9,16 @@ import mtoa.aovs as aovs
 
 def create_layers():
     if not pm.objExists('objs'):
-        pm.confirmDialog(t='confirm', m='No objs grp, please put all object under it!', b=['ok'])
+        pm.confirmDialog(t='confirm', m='No objs grp, please put all objects under it!', b=['ok'])
         sys.exit('')
 
     rs_ins = rs.instance()
     rs_ins.getDefaultRenderLayer().setRenderable(0)
     ar.createOptions()
+    setAttr('defaultArnoldDriver.mergeAOVs', 1)
+    setAttr('defaultRenderGlobals.imageFilePrefix', '<Scene>/<RenderLayer>')
 
-    aovs.AOVInterface().addAOV('ao', aovType='float')
+    aovs.AOVInterface().addAOV('ao', aovType='rgba')
     ao = pm.createNode('aiAmbientOcclusion')
     ao.outColor >> pm.PyNode('aiAOV_ao').defaultValue
 
@@ -24,6 +26,8 @@ def create_layers():
 
     # rs layer
     for obj in pm.PyNode('objs').getChildren():
+        # if has a rayswitch child
+        flag = 1 if obj.getChildren(typ='transform') else 0
 
         # beauty with out shadow
         print obj.name(), obj.type()
@@ -31,38 +35,68 @@ def create_layers():
         obj.getShape().aiSubdivType.set(1)
         obj.getShape().aiSubdivIterations.set(2)
 
-        rsl = rs_ins.createRenderLayer('rsl_beauty_'+obj.name())
-        col = rsl.createCollection('ca1_beauty_'+obj.name())
-        col.getSelector().setPattern('objs')
-        cola = col.createCollection('ca2_beauty_'+obj.name())
-        cola.getSelector().setFilterType(2)
-        cola.getSelector().setPattern('* -'+obj.getShape().name())
-        ov_matte = cola.createOverride('override_beauty_m_'+obj.name(), absOverride)
-        ov_matte.finalize('aiMatte')
-        ov_matte.setAttrValue(1)
-        ov_shadow = cola.createOverride('override_beauty_s_'+obj.name(), absOverride)
-        ov_shadow.finalize('castsShadows')
-        ov_shadow.setAttrValue(0)
+        rsl = rs_ins.createRenderLayer(obj.name()+'_beauty')
+
+        co1 = rsl.createCollection('co1_'+obj.name())
+        co1.getSelector().setPattern('*')
+
+        co2 = co1.createCollection('co2_'+obj.name())
+        co2.getSelector().setPattern('objs')
+
+        co3 = co2.createCollection('co3_'+obj.name())
+        co3.getSelector().setFilterType(2)
+        other_shapes = [i for i in pm.PyNode('objs').getChildren() if i != obj]
+        other_shapes_name = ', '.join([i.getShape().name() for i in other_shapes])
+        co3.getSelector().setPattern(other_shapes_name)
+        ov1 = co3.createOverride('ov1_'+obj.name(), absOverride)
+        ov1.finalize('primaryVisibility')
+        ov1.setAttrValue(0)
+        ov2 = co3.createOverride('ov2_'+obj.name(), absOverride)
+        ov2.finalize('castsShadows')
+        ov2.setAttrValue(0)
+
+        co4 = co2.createCollection('co4_'+obj.name())
+        co4.getSelector().setFilterType(2)
+        co4.getSelector().setPattern(obj.getShape().name())
+        ov3 = co4.createOverride('ov3_'+obj.name(), absOverride)
+        ov3.finalize('aiSelfShadows')
+        ov3.setAttrValue(1)
 
         # shadow
-        rsl = rs_ins.createRenderLayer('rsl_shadow_'+obj.name())
-        col = rsl.createCollection('ca1_shadow_'+obj.name())
-        col.getSelector().setPattern('objs')
-        cola = col.createCollection('ca2_shadow_'+obj.name())
-        cola.getSelector().setFilterType(2)
-        cola.getSelector().setPattern('* -'+obj.getShape().name())
-        ov_matte = cola.createOverride('override_shadow_m_'+obj.name(), absOverride)
-        ov_matte.finalize('aiMatte')
-        ov_matte.setAttrValue(1)
-        ov_shadow = cola.createOverride('override_shadow_s_'+obj.name(), absOverride)
-        ov_shadow.finalize('primaryVisibility')
-        ov_shadow.setAttrValue(0)
+        rsl = rs_ins.createRenderLayer(obj.name()+'_shadow')
+        co5 = rsl.createCollection('co5_'+obj.name())
+        co5.getSelector().setPattern('*')
+        co6 = co5.createCollection('co6_'+obj.name())
+        co6.getSelector().setPattern('objs')
+        co7 = co6.createCollection('co7_'+obj.name())
+        co7.getSelector().setFilterType(2)
+        co7.getSelector().setPattern(other_shapes_name)
+        ov4 = co7.createOverride('ov4_'+obj.name(), absOverride)
+        ov4.finalize('primaryVisibility')
+        ov4.setAttrValue(0)
 
-        cola = col.createCollection('ca3_shadow_'+obj.name())
-        cola.getSelector().setFilterType(2)
-        cola.getSelector().setPattern(obj.getShape().name())
-        colb = cola.createCollection('ca4_shadow_'+obj.name())
-        colb.getSelector().setFilterType(5)
-        colb.getSelector().setPattern('*')
-        ov_shader = cola.createOverride('override2_beauty_s_'+obj.name(), shaderOverride)
-        ov_shader.setShader('aiShadowMatte1')
+        co8 = co6.createCollection('co8_'+obj.name())
+        co8.getSelector().setFilterType(2)
+        co8.getSelector().setPattern(obj.getShape().name())
+        # co9 = co8.createCollection('co9_'+obj.name())
+        # co9.getSelector().setFilterType(5)
+        # co9.getSelector().setPattern('*')
+        ov6 = co8.createOverride('ov6_'+obj.name(), shaderOverride)
+        ov6.setShader(asm.name())
+
+        if flag:
+            coa = co2.createCollection('coa_'+obj.name())
+            coa.getSelector().setFilterType(2)
+            rayswitch_names = ', '.join([i.getShape().name() for i in obj.getChildren(typ='transform')])
+            coa.getSelector().setPattern(rayswitch_names)
+            ova = coa.createOverride('ova_'+obj.name(), absOverride)
+            ova.finalize('primaryVisibility')
+            ova.setAttrValue(1)
+
+            cob = co6.createCollection('cob_'+obj.name())
+            cob.getSelector().setFilterType(2)
+            cob.getSelector().setPattern(rayswitch_names)
+            ovb = cob.createOverride('ovb_'+obj.name(), absOverride)
+            ovb.finalize('primaryVisibility')
+            ovb.setAttrValue(1)
+
