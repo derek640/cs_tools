@@ -2,8 +2,8 @@
 
 mkdir D:\cs_tools\scripts\render
 
-curl https://raw.githubusercontent.com/derek640/cs_tools/master/scripts/render/beauty_ao_shadow_layerManager.py -o D:\cs_tools\scripts\render\beauty_ao_shadow_layerManager.py
-curl https://raw.githubusercontent.com/derek640/cs_tools/master/userSetup.py -o D:\cs_tools\userSetup.py
+curl https://raw.githubusercontent.com/derek640/cs_tools/master/scripts/render/beauty_ao_shadow_layerManager.py >D:\cs_tools\scripts\render\beauty_ao_shadow_layerManager.py
+curl https://raw.githubusercontent.com/derek640/cs_tools/master/userSetup.py >D:\cs_tools\userSetup.py
 
 copy /y NUL D:\cs_tools\scripts\__init__.py >NUL
 copy /y NUL D:\cs_tools\scripts\render\__init__.py >NUL
