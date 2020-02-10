@@ -38,7 +38,7 @@ def create_layers():
         # if has a rayswitch child
         flag = 1 if obj.getChildren(typ='transform') else 0
 
-        # beauty with out shadow
+        # beauty with shadow
         print obj.name(), obj.type()
 
         obj.getShape().aiSubdivType.set(1)
@@ -62,7 +62,7 @@ def create_layers():
         ov1.setAttrValue(0)
         ov2 = co3.createOverride('ov2_'+obj.name(), absOverride)
         ov2.finalize('castsShadows')
-        ov2.setAttrValue(0)
+        ov2.setAttrValue(1)
 
         co4 = co2.createCollection('co4_'+obj.name())
         co4.getSelector().setFilterType(2)
@@ -79,19 +79,25 @@ def create_layers():
         co6.getSelector().setPattern('objs')
         co7 = co6.createCollection('co7_'+obj.name())
         co7.getSelector().setFilterType(2)
-        co7.getSelector().setPattern(other_shapes_name)
+        co7.getSelector().setPattern(obj.getShape().name())
         ov4 = co7.createOverride('ov4_'+obj.name(), absOverride)
         ov4.finalize('primaryVisibility')
         ov4.setAttrValue(0)
 
         co8 = co6.createCollection('co8_'+obj.name())
         co8.getSelector().setFilterType(2)
-        co8.getSelector().setPattern(obj.getShape().name())
+        co8.getSelector().setPattern(other_shapes_name)
         # co9 = co8.createCollection('co9_'+obj.name())
         # co9.getSelector().setFilterType(5)
         # co9.getSelector().setPattern('*')
         ov6 = co8.createOverride('ov6_'+obj.name(), shaderOverride)
         ov6.setShader(asm.name())
+        ov7 = co8.createOverride('ov7_'+obj.name(), absOverride)
+        ov7.finalize('castsShadows')
+        ov7.setAttrValue(0)
+        ov8 = co8.createOverride('ov8_'+obj.name(), absOverride)
+        ov8.finalize('aiSelfShadows')
+        ov8.setAttrValue(0)
 
         if flag:
             for ii in obj.getChildren(typ='transform'):
