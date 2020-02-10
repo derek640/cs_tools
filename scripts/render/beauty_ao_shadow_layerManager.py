@@ -7,10 +7,19 @@ from maya.app.renderSetup.model.typeIDs import *
 import mtoa.core as ar
 import mtoa.aovs as aovs
 
+
 def create_layers():
     if not pm.objExists('objs'):
         pm.confirmDialog(t='confirm', m='No objs grp, please put all objects under it!', b=['ok'])
         sys.exit('')
+
+    # save origin
+    current_file = pm.sceneName()
+    if 'original' in current_file.basename():
+        pm.saveFile()
+    else:
+        origin_file = current_file.dirname() + '/' + current_file.basename().stripext() + '_original' + current_file.ext
+        pm.saveAs(origin_file)
 
     rs_ins = rs.instance()
     rs_ins.getDefaultRenderLayer().setRenderable(0)
@@ -85,6 +94,10 @@ def create_layers():
         ov6.setShader(asm.name())
 
         if flag:
+            for ii in obj.getChildren(typ='transform'):
+                ii.getShape().aiSubdivType.set(1)
+                ii.getShape().aiSubdivIterations.set(2)
+
             coa = co2.createCollection('coa_'+obj.name())
             coa.getSelector().setFilterType(2)
             rayswitch_names = ', '.join([i.getShape().name() for i in obj.getChildren(typ='transform')])
@@ -103,3 +116,7 @@ def create_layers():
     rsl = rs_ins.createRenderLayer('all_objs')
     co = rsl.createCollection('co_all')
     co.getSelector().setPattern('*')
+
+    # save after script
+    modify_file = current_file.dirname() + '/' + current_file.basename().stripext() + '_modify' + current_file.ext
+    pm.saveAs(modify_file)
