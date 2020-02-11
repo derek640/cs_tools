@@ -1,6 +1,7 @@
 import os, sys
 import pymel.core as pm
 
+import maya.app.renderSetup.model.collection as coll
 import maya.app.renderSetup.model.renderSetup as rs
 from maya.app.renderSetup.model.typeIDs import *
 
@@ -24,8 +25,9 @@ def create_layers():
     rs_ins = rs.instance()
     rs_ins.getDefaultRenderLayer().setRenderable(0)
     ar.createOptions()
-    pm.setAttr('defaultArnoldDriver.mergeAOVs', 1)
-    pm.setAttr('defaultRenderGlobals.imageFilePrefix', '<Scene>/<RenderLayer>')
+    pm.setAttr("defaultArnoldDriver.ai_translator", "png", type="string")
+    # pm.setAttr('defaultArnoldDriver.mergeAOVs', 0)
+    pm.setAttr('defaultRenderGlobals.imageFilePrefix', '<Scene>/<RenderLayer>_<RenderPass>')
 
     aovs.AOVInterface().addAOV('ao', aovType='rgba')
     ao = pm.createNode('aiAmbientOcclusion')
@@ -43,6 +45,16 @@ def create_layers():
 
         obj.getShape().aiSubdivType.set(1)
         obj.getShape().aiSubdivIterations.set(2)
+
+        obj.getShape().primaryVisibility.set(1)
+        obj.getShape().castsShadows.set(1)
+        obj.getShape().aiVisibleInDiffuseReflection.set(1)
+        obj.getShape().aiVisibleInSpecularReflection.set(1)
+        obj.getShape().aiVisibleInDiffuseTransmission.set(1)
+        obj.getShape().aiVisibleInSpecularTransmission.set(1)
+        obj.getShape().aiVisibleInVolume.set(1)
+        obj.getShape().aiSelfShadows.set(1)
+
 
         rsl = rs_ins.createRenderLayer(obj.name()+'_beauty')
 
@@ -73,6 +85,15 @@ def create_layers():
 
         # shadow
         rsl = rs_ins.createRenderLayer(obj.name()+'_shadow')
+
+        aov = rsl.aovCollectionInstance()
+        sub_colle = coll.create(obj.name()+'_ao', coll.AOVChildCollection.kTypeId, aovName='ao')
+        aov.appendChild(sub_colle)
+        override = sub_colle.createAbsoluteOverride('aiAOV_ao', 'enabled')
+        override.setAttrValue(0)
+        override.setName(obj.name()+'_ov_'+aov_name)
+
+
         co5 = rsl.createCollection('co5_'+obj.name())
         co5.getSelector().setPattern('*')
         co6 = co5.createCollection('co6_'+obj.name())
@@ -103,6 +124,18 @@ def create_layers():
             for ii in obj.getChildren(typ='transform'):
                 ii.getShape().aiSubdivType.set(1)
                 ii.getShape().aiSubdivIterations.set(2)
+
+                ii.getShape().primaryVisibility.set(0)
+                ii.getShape().castsShadows.set(0)
+                ii.getShape().aiVisibleInDiffuseReflection.set(0)
+                ii.getShape().aiVisibleInSpecularReflection.set(0)
+                ii.getShape().aiVisibleInDiffuseTransmission.set(0)
+                ii.getShape().aiVisibleInSpecularTransmission.set(0)
+                ii.getShape().aiVisibleInVolume.set(0)
+                ii.getShape().aiSelfShadows.set(0)
+
+                ii.getShape().aiMatte.set(1)
+
 
             coa = co2.createCollection('coa_'+obj.name())
             coa.getSelector().setFilterType(2)
