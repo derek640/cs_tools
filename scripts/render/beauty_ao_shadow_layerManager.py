@@ -25,8 +25,8 @@ def create_layers():
     rs_ins = rs.instance()
     rs_ins.getDefaultRenderLayer().setRenderable(0)
     ar.createOptions()
-    pm.setAttr("defaultArnoldDriver.ai_translator", "png", type="string")
-    # pm.setAttr('defaultArnoldDriver.mergeAOVs', 0)
+    pm.setAttr("defaultArnoldDriver.ai_translator", "exr", type="string")
+    pm.setAttr('defaultArnoldDriver.mergeAOVs', 0)
     pm.setAttr('defaultRenderGlobals.imageFilePrefix', '<Scene>/<RenderLayer>_<RenderPass>')
 
     aovs.AOVInterface().addAOV('ao', aovType='rgba')
@@ -56,7 +56,7 @@ def create_layers():
         obj.getShape().aiSelfShadows.set(1)
 
 
-        rsl = rs_ins.createRenderLayer(obj.name()+'_beauty')
+        rsl = rs_ins.createRenderLayer(obj.name()+'_color')
 
         co1 = rsl.createCollection('co1_'+obj.name())
         co1.getSelector().setPattern('*')
