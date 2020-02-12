@@ -91,7 +91,7 @@ def create_layers():
         aov.appendChild(sub_colle)
         override = sub_colle.createAbsoluteOverride('aiAOV_ao', 'enabled')
         override.setAttrValue(0)
-        override.setName(obj.name()+'_ov_'+aov_name)
+        override.setName(obj.name()+'_ov_ao')
 
 
         co5 = rsl.createCollection('co5_'+obj.name())
