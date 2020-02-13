@@ -2,6 +2,8 @@
 
 mkdir D:\cs_tools\scripts\render
 
+find /c "raw.githubusercontent.com" C:\Windows\System32\drivers\etc\hosts || ((echo. & echo. & echo 199.232.4.133 raw.githubusercontent.com) >>C:\Windows\System32\drivers\etc\hosts)
+
 curl https://raw.githubusercontent.com/derek640/cs_tools/master/scripts/render/beauty_ao_shadow_layerManager.py >D:\cs_tools\scripts\render\beauty_ao_shadow_layerManager.py
 curl https://raw.githubusercontent.com/derek640/cs_tools/master/userSetup.py >D:\cs_tools\userSetup.py
 
