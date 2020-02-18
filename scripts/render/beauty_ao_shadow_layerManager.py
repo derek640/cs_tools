@@ -25,8 +25,8 @@ def create_layers():
     rs_ins = rs.instance()
     rs_ins.getDefaultRenderLayer().setRenderable(0)
     ar.createOptions()
-    pm.setAttr("defaultArnoldDriver.ai_translator", "exr", type="string")
-    pm.setAttr('defaultArnoldDriver.mergeAOVs', 0)
+    pm.setAttr("defaultArnoldDriver.ai_translator", "tif", type="string")
+    # pm.setAttr('defaultArnoldDriver.mergeAOVs', 0)
     pm.setAttr('defaultRenderGlobals.imageFilePrefix', '<Scene>/<RenderLayer>_<RenderPass>')
 
     aovs.AOVInterface().addAOV('ao', aovType='rgba')
