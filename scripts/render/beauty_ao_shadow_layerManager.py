@@ -61,6 +61,14 @@ def create_layers():
         co1 = rsl.createCollection('co1_'+obj.name())
         co1.getSelector().setPattern('*')
 
+        skydomelight = ls(typ='aiSkyDomeLight')[0]
+        co1_skydome = co1.createCollection('co1_skydome_'+obj.name())
+        co1_skydome.getSelector().setPattern(skydomelight)
+        co1_skydome.getSelector().setFilterType(4)
+        ov_skydome = co1_skydome.createOverride('ov_skydome_'+obj.name(), absOverride)
+        ov_skydome.finalize('aiCastShadows')
+        ov_skydome.setAttrValue(1)
+
         co2 = co1.createCollection('co2_'+obj.name())
         co2.getSelector().setPattern('objs')
 
@@ -96,6 +104,14 @@ def create_layers():
 
         co5 = rsl.createCollection('co5_'+obj.name())
         co5.getSelector().setPattern('*')
+
+        co5_skydome = co5.createCollection('co5_skydome_'+obj.name())
+        co5_skydome.getSelector().setPattern(skydomelight)
+        co5_skydome.getSelector().setFilterType(4)
+        ov5_skydome = co5_skydome.createOverride('ov5_skydome_'+obj.name(), absOverride)
+        ov5_skydome.finalize('aiCastShadows')
+        ov5_skydome.setAttrValue(0)
+
         co6 = co5.createCollection('co6_'+obj.name())
         co6.getSelector().setPattern('objs')
         co7 = co6.createCollection('co7_'+obj.name())
