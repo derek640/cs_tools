@@ -61,7 +61,7 @@ def create_layers():
         co1 = rsl.createCollection('co1_'+obj.name())
         co1.getSelector().setPattern('*')
 
-        skydomelight = ls(typ='aiSkyDomeLight')[0]
+        skydomelight = pm.ls(typ='aiSkyDomeLight')[0]
         co1_skydome = co1.createCollection('co1_skydome_'+obj.name())
         co1_skydome.getSelector().setPattern(skydomelight)
         co1_skydome.getSelector().setFilterType(4)
