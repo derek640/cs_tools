@@ -82,7 +82,7 @@ def create_layers():
         ov1.setAttrValue(0)
         ov2 = co3.createOverride('ov2_'+obj.name(), absOverride)
         ov2.finalize('castsShadows')
-        ov2.setAttrValue(1)
+        ov2.setAttrValue(0)
 
         co4 = co2.createCollection('co4_'+obj.name())
         co4.getSelector().setFilterType(2)
